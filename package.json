@@ -1,0 +1,9 @@
+{
+  "name": "git-express",
+  "description": "Web server that is designed to host git repos and serve the site at any point in the git history.",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "express": "*"
+  }
+}
