@@ -3,7 +3,15 @@ var CONFIG  = require("./config"),
     open    = require("nodegit").Repository.open,
     proxy   = express()
 
-function openDocroot (res, pull_callback, path, error_callback) {
+function replaceAll(find, replace, str) {
+  return str.replace(new RegExp(find, 'g'), replace);
+}
+
+function parser (id, data) {
+	return replaceAll ("href=\"/", "href=\"/" + id + "/", data);
+}
+
+function openDocroot (res, req, pull_callback, path, error_callback) {
   open(CONFIG.DOCROOT)
     .then(function(repo) {
       return pull_callback(repo);
@@ -22,9 +30,10 @@ function openDocroot (res, pull_callback, path, error_callback) {
       });
       console.log ("detected")
     }).then(function(blob) {
-      var file_contents = String(blob);
+      var id            = req.originalUrl.split ('/')[1],
+          file_contents = String(blob)
 
-      res.send(file_contents)
+      res.send(parser (id, file_contents))
 
       console.log ("Request closed")
     }).catch(function(err) {
@@ -56,8 +65,8 @@ proxy.use (function (req, res) {
 
   console.log ()
 
-  openDocroot (res, commit_callback, path,          // try loading file via commit hash
-    openDocroot (res, branch_callback, path, null)  // try loading file via branch name
+  openDocroot (res, req, commit_callback, path,          // try loading file via commit hash
+    openDocroot (res, req, branch_callback, path, null)  // try loading file via branch name
   )
 })
 
