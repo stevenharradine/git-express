@@ -35,7 +35,41 @@ proxy.use (function (req, res) {
     .then(function(blob) {
       res.send(String(blob));
     })
-    .catch(function(err) { console.log(err); });
+    .catch(function(err) {
+    	console.log(err)
+
+    	if (commit_hash == "master") {
+		  open("docroot")//, "docroot", null)
+		    // Look up this known commit.
+		    .then(function(repo) {
+		      // Use a known commit sha from this repository.
+		      return repo.getCommit("d6e93a67642f94dd58697065fb5d24f6d7d22910");
+		    })
+		    // Look up a specific file within that commit.
+		    .then(function(commit) {
+		      return commit.getEntry(path);
+		    })
+		    // Get the blob contents from the file.
+		    .then(function(entry) {
+		      // Patch the blob to contain a reference to the entry.
+		      return entry.getBlob().then(function(blob) {
+		        blob.entry = entry;
+		        return blob;
+		      });
+		    })
+		    // Display information about the blob.
+		    .then(function(blob) {
+		      res.send(String(blob));
+		    })
+		    .catch(function(err) {
+		    	console.log(err)
+
+//		    	res.send(err);
+		    })
+    	}
+      console.log(err)
+//    	res.send(err);
+    })
 })
 
 proxy.listen(3000)
