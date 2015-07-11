@@ -1,7 +1,6 @@
 var CONFIG = require("./config")
 var express = require('express')
-var clone = require("nodegit").Clone.clone;
-var open = require("nodegit").Repository.open;
+var open = require("nodegit").Repository.open
 var proxy = express()
 
 proxy.use (function (req, res) {
@@ -11,9 +10,7 @@ proxy.use (function (req, res) {
 
   console.log (path)
 
-// Clone a given repository into a specific folder.
-//  clone(CONFIG.GIT_PATH, CONFIG.DOC_ROOT, null)
-  open(CONFIG.DOC_ROOT)//, "docroot", null)
+  open(CONFIG.DOC_ROOT)
     // Look up this known commit.
     .then(function(repo) {
       // Use a known commit sha from this repository.
