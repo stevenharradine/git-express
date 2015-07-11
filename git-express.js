@@ -43,7 +43,7 @@ proxy.use (function (req, res) {
 		    // Look up this known commit.
 		    .then(function(repo) {
 		      // Use a known commit sha from this repository.
-		      return repo.getCommit("d6e93a67642f94dd58697065fb5d24f6d7d22910");
+		      return repo.getBranchCommit("master");
 		    })
 		    // Look up a specific file within that commit.
 		    .then(function(commit) {
@@ -63,12 +63,9 @@ proxy.use (function (req, res) {
 		    })
 		    .catch(function(err) {
 		    	console.log(err)
-
-//		    	res.send(err);
 		    })
     	}
       console.log(err)
-//    	res.send(err);
     })
 })
 
