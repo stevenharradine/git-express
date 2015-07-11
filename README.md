@@ -3,6 +3,11 @@ A web server that hosts git repositories and serves the site at any point in tim
 
 ## Setup
 
+### update config
+point `module.exports.GIT_PATH` to your repo.
+
+```module.exports.GIT_PATH = "https://github.com/stevenharradine/simple-site.git"```
+
 ### clone repo
 
 ```node init```
