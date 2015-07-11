@@ -74,4 +74,4 @@ proxy.use (function (req, res) {
     })
 })
 
-proxy.listen(3000)
+proxy.listen(CONFIG.PORT)
