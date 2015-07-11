@@ -3,75 +3,59 @@ var express = require('express')
 var open = require("nodegit").Repository.open
 var proxy = express()
 
-proxy.use (function (req, res) {
-  var url_folders = req.originalUrl.split ('/')
-  var commit_hash = url_folders[1]
-  var path = url_folders.slice(2).join('/')
-
-  console.log ()
-
+function openDocroot (res, pull_callback, path, error_callback) {
   open(CONFIG.DOCROOT)
-    // Look up this known commit.
     .then(function(repo) {
-      process.stdout.write("Commit request: " + commit_hash + " ... ")
-      // Use a known commit sha from this repository.
-      return repo.getCommit(commit_hash);
-    })
-    // Look up a specific file within that commit.
-    .then(function(commit) {
+      return pull_callback(repo);
+    }).then(function(commit) {
       console.log ("detected")
       console.log ("Requested path: " + path)
 
       return commit.getEntry(path);
-    })
-    // Get the blob contents from the file.
-    .then(function(entry) {
-      // Patch the blob to contain a reference to the entry.
+    }).then(function(entry) {
+      process.stdout.write("Get blob ... ")
       return entry.getBlob().then(function(blob) {
-        blob.entry = entry;
-        return blob;
+      	console.log ("detected")
+        blob.entry = entry
+        return blob
       });
-    })
-    // Display information about the blob.
-    .then(function(blob) {
-      res.send(String(blob));
-    })
-    .catch(function(err) {
-    	var branch_name = commit_hash
+      console.log ("detected")
+    }).then(function(blob) {
+      res.send(String(blob))
 
-    	console.log (err)
+      console.log ("Request closed")
+    }).catch(function(err) {
+      error_callback()
 
-        open(CONFIG.DOCROOT)
-          // Look up this known commit.
-          .then(function(repo) {
-          	process.stdout.write("Branch request: " + branch_name + " ... ")
-            // Use a known commit sha from this repository.
-            return repo.getReferenceCommit("origin/" + branch_name)
-          })
-          // Look up a specific file within that commit.
-          .then(function(commit) {
-            console.log ("detected")
-            console.log ("Requested path: " + path)
-
-            return commit.getEntry(path)
-          })
-          // Get the blob contents from the file.
-          .then(function(entry) {
-            // Patch the blob to contain a reference to the entry.
-            return entry.getBlob().then(function(blob) {
-              blob.entry = entry;
-              return blob;
-            });
-          })
-          // Display information about the blob.
-          .then(function(blob) {
-            res.send(String(blob));
-          })
-          .catch(function(err) {
-    	      console.log(err)
-    	      res.send (err)
-          })
+      res.send(err)
     })
+}
+
+proxy.use (function (req, res) {
+  var url_folders = req.originalUrl.split ('/')
+  var path = url_folders.slice(2).join('/')
+
+  var commit_callback = function (repo) {
+  	var commit_hash = url_folders[1]
+
+    process.stdout.write("request: " + commit_hash + " ... ")
+
+    return repo.getCommit(commit_hash)
+  }
+
+  var branch_callback = function (repo) {
+  	var branch_name = url_folders[1]
+
+	process.stdout.write("Branch request: " + branch_name + " ... ")
+    
+    return repo.getReferenceCommit("origin/" + branch_name)
+  }
+
+  console.log ()
+
+  openDocroot (res, commit_callback, path,				// try loading file via commit hash
+  	openDocroot (res, branch_callback, path, null)		// try loading file via branch name
+  )
 })
 
 proxy.listen(CONFIG.PORT)
