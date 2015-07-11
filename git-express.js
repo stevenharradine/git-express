@@ -1,5 +1,6 @@
 var express = require('express')
 var clone = require("nodegit").Clone.clone;
+var open = require("nodegit").Repository.open;
 var proxy = express()
 var git_path = "https://github.com/stevenharradine/git-express.git"
 
@@ -16,10 +17,9 @@ proxy.use (function (req, res) {
   var commit_hash = url_folders[1]
   var path = url_folders[2]
 
-  console.log ()
-
 // Clone a given repository into a specific folder.
-  clone(git_path, "docroot", null)
+//  clone(git_path, "docroot", null)
+  open("docroot")//, "docroot", null)
     // Look up this known commit.
     .then(function(repo) {
       // Use a known commit sha from this repository.
