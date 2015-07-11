@@ -16,6 +16,7 @@ function openDocroot (res, pull_callback, path, error_callback) {
       process.stdout.write("Get blob ... ")
       return entry.getBlob().then(function(blob) {
         console.log ("detected")
+        
         blob.entry = entry
         return blob
       });
