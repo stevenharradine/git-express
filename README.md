@@ -8,7 +8,7 @@ point `module.exports.GIT_PATH` to your repo.
 
 ```module.exports.GIT_PATH = "https://github.com/stevenharradine/simple-site.git"```
 
-### clone repo
+### clone docroot
 
 ```node init```
 
