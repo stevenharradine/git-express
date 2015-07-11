@@ -16,13 +16,15 @@ function openDocroot (res, pull_callback, path, error_callback) {
       process.stdout.write("Get blob ... ")
       return entry.getBlob().then(function(blob) {
         console.log ("detected")
-        
+
         blob.entry = entry
         return blob
       });
       console.log ("detected")
     }).then(function(blob) {
-      res.send(String(blob))
+      var file_contents = String(blob);
+
+      res.send(file_contents)
 
       console.log ("Request closed")
     }).catch(function(err) {
