@@ -12,18 +12,22 @@ var getCommitMessage = function(commit) {
 }
 
 proxy.use (function (req, res) {
-  var branch = req.originalUrl.substring (1)
+  var url_folders = req.originalUrl.split ('/')
+  var commit_hash = url_folders[1]
+  var path = url_folders[2]
+
+  console.log ()
 
 // Clone a given repository into a specific folder.
   clone(git_path, "docroot", null)
     // Look up this known commit.
     .then(function(repo) {
       // Use a known commit sha from this repository.
-      return repo.getCommit("e4ee311506fea83e02455f6cd14c931ade6f505e");
+      return repo.getCommit(commit_hash);
     })
     // Look up a specific file within that commit.
     .then(function(commit) {
-      return commit.getEntry("README.md");
+      return commit.getEntry(path);
     })
     // Get the blob contents from the file.
     .then(function(entry) {
