@@ -2,20 +2,14 @@ var express = require('express')
 var clone = require("nodegit").Clone.clone;
 var open = require("nodegit").Repository.open;
 var proxy = express()
-var git_path = "https://github.com/stevenharradine/git-express.git"
-
-var getMostRecentCommit = function(repository) {
-  return repository.getBranchCommit(branch)
-}
-
-var getCommitMessage = function(commit) {
-  return commit.message()
-}
+var git_path = "https://github.com/stevenharradine/simple-site.git"
 
 proxy.use (function (req, res) {
   var url_folders = req.originalUrl.split ('/')
   var commit_hash = url_folders[1]
-  var path = url_folders[2]
+  var path = url_folders.slice(2).join('/')
+
+  console.log (path)
 
 // Clone a given repository into a specific folder.
 //  clone(git_path, "docroot", null)
