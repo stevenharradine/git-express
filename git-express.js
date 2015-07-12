@@ -1,7 +1,7 @@
-var CONFIG  = require("./config"),
-    express = require('express'),
-    open    = require("nodegit").Repository.open,
-    proxy   = express()
+var CONFIG    = require("./config"),
+    express   = require('express'),
+    open      = require("nodegit").Repository.open,
+    webserver = express()
 
 // taken from https://css-tricks.com/snippets/javascript/get-url-variables/ on 20150812 @ 05:00 EST
 function getQueryVariable(query, variable) {
@@ -55,7 +55,7 @@ function openDocroot (res, req, pull_callback, path, error_callback) {
     })
 }
 
-proxy.use (function (req, res) {
+webserver.use (function (req, res) {
   var url_folders    = req.originalUrl.split ('/'),
       location       = url_folders.slice(1).join('/'),
       location_split = location.split ('?'),
@@ -85,4 +85,4 @@ proxy.use (function (req, res) {
   )
 })
 
-proxy.listen(CONFIG.PORT)
+webserver.listen(CONFIG.PORT)
