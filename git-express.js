@@ -3,6 +3,7 @@ var CONFIG    = require("./config"),
     open      = require("nodegit").Repository.open,
     webserver = express()
 
+// taken from http://stackoverflow.com/questions/1144783/replacing-all-occurrences-of-a-string-in-javascript on 20150812 @ 05:00 EST
 function replaceAll(find, replace, str) {
   return str.replace(new RegExp(find, 'g'), replace);
 }
