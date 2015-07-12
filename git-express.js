@@ -50,29 +50,29 @@ webserver.use (function (req, res) {
       id          = url_folders[2],
       path        = url_folders.slice(3).join('/')
 
-  var commit_callback = function (repo) {
-    var commit_hash = id
+  if (type == "commit") {         // try loading file via commit hash
+    var commit_callback = function (repo) {
+      var commit_hash = id
 
-    process.stdout.write("Commit request: " + commit_hash + " ... ")
+      process.stdout.write("Commit request: " + commit_hash + " ... ")
 
-    return repo.getCommit(commit_hash)
-  }
+      return repo.getCommit(commit_hash)
+    }
 
-  var branch_callback = function (repo) {
-    var branch_name = id
+    openDocroot (res, req, commit_callback, path)
+  } else if (type == "branch") {  // try loading file via branch name
+    var branch_callback = function (repo) {
+      var branch_name = id
 
-    process.stdout.write("Branch request: " + branch_name + " ... ")
+      process.stdout.write("Branch request: " + branch_name + " ... ")
     
-    return repo.getReferenceCommit("origin/" + branch_name)
+      return repo.getReferenceCommit("origin/" + branch_name)
+    }
+
+    openDocroot (res, req, branch_callback, path)
   }
 
   console.log ()
-
-  if (type == "commit") {         // try loading file via commit hash
-    openDocroot (res, req, commit_callback, path)
-  } else if (type == "branch") {  // try loading file via branch name
-    openDocroot (res, req, branch_callback, path)
-  }
 })
 
 webserver.listen(CONFIG.PORT)
