@@ -12,7 +12,7 @@ function parser (id, data) {
 	return replaceAll ("href=\"/", "href=\"/" + id + "/", data);
 }
 
-function openDocroot (res, req, pull_callback, path, error_callback) {
+function openDocroot (res, req, pull_callback, path) {
   open(CONFIG.DOCROOT)
     .then(function(repo) {
       return pull_callback(repo);
@@ -46,10 +46,12 @@ function openDocroot (res, req, pull_callback, path, error_callback) {
 
 webserver.use (function (req, res) {
   var url_folders = req.originalUrl.split ('/'),
-      path        = url_folders.slice(2).join('/')
+      type        = url_folders[1],
+      id          = url_folders[2],
+      path        = url_folders.slice(3).join('/')
 
   var commit_callback = function (repo) {
-    var commit_hash = url_folders[1]
+    var commit_hash = id
 
     process.stdout.write("Commit request: " + commit_hash + " ... ")
 
@@ -57,7 +59,7 @@ webserver.use (function (req, res) {
   }
 
   var branch_callback = function (repo) {
-    var branch_name = url_folders[1]
+    var branch_name = id
 
     process.stdout.write("Branch request: " + branch_name + " ... ")
     
@@ -66,9 +68,11 @@ webserver.use (function (req, res) {
 
   console.log ()
 
-  openDocroot (res, req, commit_callback, path,          // try loading file via commit hash
-    openDocroot (res, req, branch_callback, path, null)  // try loading file via branch name
-  )
+  if (type == "commit") {         // try loading file via commit hash
+    openDocroot (res, req, commit_callback, path)
+  } else if (type == "branch") {  // try loading file via branch name
+    openDocroot (res, req, branch_callback, path)
+  }
 })
 
 webserver.listen(CONFIG.PORT)
