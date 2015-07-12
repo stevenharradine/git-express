@@ -1,7 +1,7 @@
-var CONFIG  = require("./config"),
-    express = require('express'),
-    open    = require("nodegit").Repository.open,
-    proxy   = express()
+var CONFIG    = require("./config"),
+    express   = require('express'),
+    open      = require("nodegit").Repository.open,
+    webserver = express()
 
 function replaceAll(find, replace, str) {
   return str.replace(new RegExp(find, 'g'), replace);
@@ -43,7 +43,7 @@ function openDocroot (res, req, pull_callback, path, error_callback) {
     })
 }
 
-proxy.use (function (req, res) {
+webserver.use (function (req, res) {
   var url_folders = req.originalUrl.split ('/'),
       path        = url_folders.slice(2).join('/')
 
@@ -70,4 +70,4 @@ proxy.use (function (req, res) {
   )
 })
 
-proxy.listen(CONFIG.PORT)
+webserver.listen(CONFIG.PORT)
