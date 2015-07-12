@@ -3,6 +3,18 @@ var CONFIG  = require("./config"),
     open    = require("nodegit").Repository.open,
     proxy   = express()
 
+// taken from https://css-tricks.com/snippets/javascript/get-url-variables/ on 20150812 @ 05:00 EST
+function getQueryVariable(query, variable) {
+//       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
+
+// taken from http://stackoverflow.com/questions/1144783/replacing-all-occurrences-of-a-string-in-javascript on 20150812 @ 05:00 EST
 function replaceAll(find, replace, str) {
   return str.replace(new RegExp(find, 'g'), replace);
 }
@@ -44,11 +56,14 @@ function openDocroot (res, req, pull_callback, path, error_callback) {
 }
 
 proxy.use (function (req, res) {
-  var url_folders = req.originalUrl.split ('/'),
-      path        = url_folders.slice(2).join('/')
+  var url_folders    = req.originalUrl.split ('/'),
+      location       = url_folders.slice(1).join('/'),
+      location_split = location.split ('?'),
+      path           = location_split[0],
+      query_string   = location_split[1]
 
   var commit_callback = function (repo) {
-    var commit_hash = url_folders[1]
+    var commit_hash = getQueryVariable (query_string, "hash")
 
     process.stdout.write("Commit request: " + commit_hash + " ... ")
 
@@ -56,7 +71,7 @@ proxy.use (function (req, res) {
   }
 
   var branch_callback = function (repo) {
-    var branch_name = url_folders[1]
+    var branch_name = getQueryVariable (query_string, "branch")
 
     process.stdout.write("Branch request: " + branch_name + " ... ")
     
